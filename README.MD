@@ -18,3 +18,13 @@ Like other vs projects.
 
 ### Run
 Double click `NanopbDemo.exe` under `NanopbDemo\Release`.
+
+## Change log
+### V0
+```proto
+syntax = "proto3";
+
+message Response {
+  int32 code = 1;
+}
+```
