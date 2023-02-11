@@ -1,0 +1,8 @@
+.*
+!.gitignore
+
+Debug/
+Release/
+
+*.pb.h
+*.pb.c
