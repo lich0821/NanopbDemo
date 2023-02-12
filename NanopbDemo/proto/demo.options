@@ -1,0 +1,3 @@
+# Generate all fields as pointers.
+* mangle_names:M_STRIP_PACKAGE
+* fallback_type:FT_POINTER
