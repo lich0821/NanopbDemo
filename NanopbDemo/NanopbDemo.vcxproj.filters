@@ -16,6 +16,9 @@
     <Filter Include="proto">
       <UniqueIdentifier>{c0b2f996-4d96-4741-b393-e230a68cc1ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nanopb">
+      <UniqueIdentifier>{9668f63b-7bb3-4670-8157-c09d113f630a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,10 +27,31 @@
     <ClCompile Include="proto\demo.pb.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="nanopb\pb_common.c">
+      <Filter>nanopb</Filter>
+    </ClCompile>
+    <ClCompile Include="nanopb\pb_decode.c">
+      <Filter>nanopb</Filter>
+    </ClCompile>
+    <ClCompile Include="nanopb\pb_encode.c">
+      <Filter>nanopb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proto\demo.pb.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="nanopb\pb.h">
+      <Filter>nanopb</Filter>
+    </ClInclude>
+    <ClInclude Include="nanopb\pb_common.h">
+      <Filter>nanopb</Filter>
+    </ClInclude>
+    <ClInclude Include="nanopb\pb_decode.h">
+      <Filter>nanopb</Filter>
+    </ClInclude>
+    <ClInclude Include="nanopb\pb_encode.h">
+      <Filter>nanopb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

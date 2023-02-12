@@ -1,87 +1,106 @@
-﻿#include <conio.h>
+﻿#include <conio.h> // _getch()
 #include <stdio.h>
-#include <stdlib.h>
+#include <vector>
 
 #include <pb_decode.h>
 #include <pb_encode.h>
 
 #include "demo.pb.h"
 
-int main()
+void print_buffer(uint8_t *buffer, size_t len)
 {
-    /* This is the buffer where we will store our message. */
-    uint8_t *buffer;
-    size_t message_length;
-    bool status;
-
-    /* Encode our message */
-    {
-        /* Allocate space on the stack to store the message data.
-         *
-         * Nanopb generates simple struct definitions for all the messages.
-         * - check out the contents of simple.pb.h!
-         * It is a good idea to always initialize your structures
-         * so that you do not have garbage data from RAM in there.
-         */
-        Response message = Response_init_zero;
-
-        /* Fill in the code */
-        message.code = 13;
-        if (!pb_get_encoded_size(&message_length, Response_fields, &message)) {
-            return -1;
-        }
-        printf("Encoded size: %d\n", message_length);
-
-        buffer = (uint8_t *)malloc(message_length);
-        if (buffer == NULL) {
-            return -2;
-        }
-
-        /* Create a stream that will write to our buffer. */
-        pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-
-        /* Now we are ready to encode the message! */
-        status = pb_encode(&stream, Response_fields, &message);
-
-        /* Then just check for any errors.. */
-        if (!status) {
-            printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));
-            return 1;
-        }
-    }
-
-    printf("Encoded message: ");
-    for (size_t i = 0; i < message_length; i++) {
-        printf("%02X ", (uint8_t)buffer[i]);
+    printf("Encoded message[%d]:\n", len);
+    for (size_t i = 0; i < len; i++) {
+        printf("%02X ", buffer[i]);
     }
     printf("\n");
+}
 
-    /* Now we could transmit the message over network, store it in a file or
-     * wrap it to a pigeon's leg.
-     */
-
-    /* But because we are lazy, we will just decode it immediately. */
-
-    {
-        /* Allocate space for the decoded message. */
-        Response message = Response_init_zero;
-
-        /* Create a stream that reads from the buffer. */
-        pb_istream_t stream = pb_istream_from_buffer(buffer, message_length);
-
-        /* Now we are ready to decode the message. */
-        status = pb_decode(&stream, Response_fields, &message);
-
-        /* Check for errors... */
-        if (!status) {
-            printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
-            return 1;
-        }
-
-        /* Print the data contained in the message. */
-        printf("The response code is: %d\n", (int)message.code);
-        free(buffer);
+bool encode_req(std::vector<uint8_t> *buffer, Request req)
+{
+    size_t len;
+    if (!pb_get_encoded_size(&len, Request_fields, &req)) {
+        return false;
     }
+    buffer->resize(len);
+
+    pb_ostream_t stream = pb_ostream_from_buffer(&buffer->front(), len);
+    if (!pb_encode(&stream, Request_fields, &req)) {
+        printf("Encoding failed: %s\n", PB_GET_ERROR(&stream));
+        return false;
+    }
+
+    return true;
+}
+
+bool decode_req(uint8_t *buffer, size_t len, Request *req)
+{
+    pb_istream_t stream = pb_istream_from_buffer(buffer, len);
+
+    if (!pb_decode(&stream, Request_fields, req)) {
+        printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+        return false;
+    }
+    return true;
+}
+
+void test_is_login()
+{
+    std::vector<uint8_t> buffer;
+    Request enc = Request_init_default;
+    enc.func = Functions_FUNC_IS_LOGIN;
+    enc.which_msg = Request_empty_tag;
+
+    encode_req(&buffer, enc);
+    print_buffer(&buffer.front(), buffer.size());
+
+    Request dec = Request_init_default;
+    decode_req(&buffer.front(), buffer.size(), &dec);
+    printf("Decoded message:\nFunc: %02x, ", dec.func);
+    pb_release(Request_fields, &dec);
+}
+
+void test_get_self_wxid()
+{
+    std::vector<uint8_t> buffer;
+    Request enc = Request_init_default;
+    enc.func = Functions_FUNC_GET_SELF_WXID;
+    enc.which_msg = Request_empty_tag;
+
+    encode_req(&buffer, enc);
+    print_buffer(&buffer.front(), buffer.size());
+
+    Request dec = Request_init_default;
+    decode_req(&buffer.front(), buffer.size(), &dec);
+    printf("Decoded message:\nFunc: %02x, ", dec.func);
+    pb_release(Request_fields, &dec);
+}
+
+void test_send_txt(char *msg, char *receiver, char *aters)
+{
+    std::vector<uint8_t> buffer;
+
+    // TextMsg txt   = { msg, receiver, aters };
+    Request enc   = Request_init_default;
+    enc.func      = Functions_FUNC_SEND_TXT;
+    enc.which_msg = Request_txt_tag;
+    enc.msg.txt   = { msg, receiver, aters };
+
+    encode_req(&buffer, enc);
+    print_buffer(&buffer.front(), buffer.size());
+
+    Request dec = Request_init_default;
+    decode_req(&buffer.front(), buffer.size(), &dec);
+    printf("Decoded message:\nFunc: %02x, ", dec.func);
+    printf("\nmsg: %s\nreceiver: %s\naters: %s\n\n", dec.msg.txt.msg, dec.msg.txt.receiver, dec.msg.txt.aters);
+    pb_release(Request_fields, &dec);
+}
+
+int main()
+{
+    test_is_login();
+    test_get_self_wxid();
+    test_send_txt((char *)"This is message", (char *)"TO CHUCK", (char *)"@all");
 
     return _getch();
 }

@@ -83,7 +83,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -106,14 +106,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)proto;C:\Tools\vcpkg\installed\x86-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)nanopb;$(ProjectDir)proto;C:\Tools\vcpkg\installed\x86-windows-static\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>protobuf-nanopb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>cd $(ProjectDir)proto
@@ -153,9 +154,16 @@ C:\Tools\nanopb\protoc --nanopb_out=. demo.proto</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="nanopb\pb_common.c" />
+    <ClCompile Include="nanopb\pb_decode.c" />
+    <ClCompile Include="nanopb\pb_encode.c" />
     <ClCompile Include="proto\demo.pb.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="nanopb\pb.h" />
+    <ClInclude Include="nanopb\pb_common.h" />
+    <ClInclude Include="nanopb\pb_decode.h" />
+    <ClInclude Include="nanopb\pb_encode.h" />
     <ClInclude Include="proto\demo.pb.h" />
   </ItemGroup>
   <ItemGroup>
