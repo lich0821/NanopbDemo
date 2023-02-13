@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "nanopb.proto";
+
 package wcf;
 option java_package = "com.iamteer.wcf";
 
@@ -52,6 +54,7 @@ message Request
 
 message Response
 {
+    option (nanopb_msgopt).submsg_callback = true;
     Functions func = 1;
     oneof msg
     {
