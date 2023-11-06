@@ -11,13 +11,17 @@
 
 typedef std::map<int, std::string> MsgTypes_t;
 
-void print_buffer(uint8_t *buffer, size_t len)
+void print_buffer(uint8_t *buffer, size_t len, const char *prefix, bool newline)
 {
-    printf("Encoded message[%d]:\n", len);
+    if (prefix != NULL) {
+        printf("%s[%d]:\n", prefix, len);
+    }
+
     for (size_t i = 0; i < len; i++) {
         printf("%02X ", buffer[i]);
     }
-    printf("\n");
+    if (newline)
+        printf("\n");
 }
 
 bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void *const *arg)
@@ -130,12 +134,13 @@ void test_is_login()
     enc.which_msg = Request_empty_tag;
 
     encode_req(&buffer, enc);
-    print_buffer(&buffer.front(), buffer.size());
+    print_buffer(&buffer.front(), buffer.size(), "Encoded message", true);
 
     Request dec = Request_init_default;
     decode_req(&buffer.front(), buffer.size(), &dec);
-    printf("Decoded message:\nFunc: %02x, ", dec.func);
+    printf("Decoded message:\nFunc: %02x\n", dec.func);
     pb_release(Request_fields, &dec);
+    printf("---------------------------------------\n");
 }
 
 void test_get_self_wxid()
@@ -146,32 +151,33 @@ void test_get_self_wxid()
     enc.which_msg = Request_empty_tag;
 
     encode_req(&buffer, enc);
-    print_buffer(&buffer.front(), buffer.size());
+    print_buffer(&buffer.front(), buffer.size(), "Encoded message", true);
 
     Request dec = Request_init_default;
     decode_req(&buffer.front(), buffer.size(), &dec);
-    printf("Decoded message:\nFunc: %02x, ", dec.func);
+    printf("Decoded message:\nFunc: %02x\n", dec.func);
     pb_release(Request_fields, &dec);
+    printf("---------------------------------------\n");
 }
 
 void test_send_txt(char *msg, char *receiver, char *aters)
 {
     std::vector<uint8_t> buffer;
 
-    // TextMsg txt   = { msg, receiver, aters };
-    Request enc   = Request_init_default;
+     Request enc   = Request_init_default;
     enc.func      = Functions_FUNC_SEND_TXT;
     enc.which_msg = Request_txt_tag;
     enc.msg.txt   = { msg, receiver, aters };
 
     encode_req(&buffer, enc);
-    print_buffer(&buffer.front(), buffer.size());
+    print_buffer(&buffer.front(), buffer.size(), "Encoded message", true);
 
     Request dec = Request_init_default;
     decode_req(&buffer.front(), buffer.size(), &dec);
     printf("Decoded message:\nFunc: %02x, ", dec.func);
-    printf("\nmsg: %s\nreceiver: %s\naters: %s\n\n", dec.msg.txt.msg, dec.msg.txt.receiver, dec.msg.txt.aters);
+    printf("\nmsg: %s\nreceiver: %s\naters: %s\n", dec.msg.txt.msg, dec.msg.txt.receiver, dec.msg.txt.aters);
     pb_release(Request_fields, &dec);
+    printf("---------------------------------------\n");
 }
 
 void test_get_msg_types()
@@ -210,7 +216,7 @@ void test_get_msg_types()
         return;
     }
     len = stream.bytes_written;
-    print_buffer(buffer, len);
+    print_buffer(buffer, len, "Encoded message", true);
 
     MsgTypes_t out;
     Response dec            = Response_init_default;
@@ -226,8 +232,8 @@ void test_get_msg_types()
     for (auto it = out.begin(); it != out.end(); it++) {
         printf("key: %d, value: %s\r\n", it->first, it->second.c_str());
     }
-    printf("Done.\n");
     pb_release(Response_fields, &dec);
+    printf("---------------------------------------\n");
 }
 
 int main()
