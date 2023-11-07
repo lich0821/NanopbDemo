@@ -9,7 +9,9 @@
 
 #include "demo.pb.h"
 
-typedef std::map<int, std::string> MsgTypes_t;
+using namespace std;
+
+typedef map<int, string> MsgTypes_t;
 
 void print_buffer(uint8_t *buffer, size_t len, const char *prefix, bool newline)
 {
@@ -37,8 +39,8 @@ bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void *const *a
 
 bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-    std::string *str = static_cast<std::string *>(*arg);
-    size_t len       = stream->bytes_left;
+    string *str = static_cast<string *>(*arg);
+    size_t len  = stream->bytes_left;
     str->resize(len);
     if (!pb_read(stream, (uint8_t *)str->data(), len)) {
         return false;
@@ -70,8 +72,8 @@ static bool encode_types(pb_ostream_t *stream, const pb_field_t *field, void *co
 
 bool decode_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-    std::map<int, std::string> *m = (std::map<int, std::string> *)*arg;
-    std::string str;
+    map<int, string> *m = (map<int, string> *)*arg;
+    string str;
     MsgTypes_TypesEntry message = MsgTypes_TypesEntry_init_default;
     message.value.funcs.decode  = &decode_string;
     message.value.arg           = &str;
@@ -98,7 +100,7 @@ bool cb_msg_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
     return true;
 }
 
-bool encode_req(std::vector<uint8_t> *buffer, Request req)
+bool encode_req(vector<uint8_t> *buffer, Request req)
 {
     size_t len;
     if (!pb_get_encoded_size(&len, Request_fields, &req)) {
@@ -128,7 +130,7 @@ bool decode_req(uint8_t *buffer, size_t len, Request *req)
 
 void test_is_login()
 {
-    std::vector<uint8_t> buffer;
+    vector<uint8_t> buffer;
     Request enc   = Request_init_default;
     enc.func      = Functions_FUNC_IS_LOGIN;
     enc.which_msg = Request_empty_tag;
@@ -145,7 +147,7 @@ void test_is_login()
 
 void test_get_self_wxid()
 {
-    std::vector<uint8_t> buffer;
+    vector<uint8_t> buffer;
     Request enc   = Request_init_default;
     enc.func      = Functions_FUNC_GET_SELF_WXID;
     enc.which_msg = Request_empty_tag;
@@ -162,7 +164,7 @@ void test_get_self_wxid()
 
 void test_send_txt(char *msg, char *receiver, char *aters)
 {
-    std::vector<uint8_t> buffer;
+    vector<uint8_t> buffer;
 
     Request enc   = Request_init_default;
     enc.func      = Functions_FUNC_SEND_TXT;
