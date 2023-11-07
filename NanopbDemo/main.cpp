@@ -85,7 +85,7 @@ bool decode_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
     return true;
 }
 
-bool msg_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+bool cb_msg_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
     Response *rsp = (Response *)field->message;
 
@@ -164,7 +164,7 @@ void test_send_txt(char *msg, char *receiver, char *aters)
 {
     std::vector<uint8_t> buffer;
 
-     Request enc   = Request_init_default;
+    Request enc   = Request_init_default;
     enc.func      = Functions_FUNC_SEND_TXT;
     enc.which_msg = Request_txt_tag;
     enc.msg.txt   = { msg, receiver, aters };
@@ -221,7 +221,7 @@ void test_get_msg_types()
     MsgTypes_t out;
     Response dec            = Response_init_default;
     pb_istream_t ostream    = pb_istream_from_buffer(buffer, len);
-    dec.cb_msg.funcs.decode = msg_callback;
+    dec.cb_msg.funcs.decode = cb_msg_types;
     dec.cb_msg.arg          = &out;
     if (!pb_decode(&ostream, Response_fields, &dec)) {
         printf("Decoding failed: %s\n", PB_GET_ERROR(&stream));

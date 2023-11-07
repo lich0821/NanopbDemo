@@ -5,23 +5,6 @@ import "nanopb.proto";
 package wcf;
 option java_package = "com.iamteer.wcf";
 
-/*
-service Wcf {
-  rpc RpcIsLogin(Empty) returns (Response) {}
-  rpc RpcGetSelfWxid(Empty) returns (String) {}
-  rpc RpcEnableRecvMsg(Empty) returns (stream WxMsg) {}
-  rpc RpcDisableRecvMsg(Empty) returns (Response) {}
-  rpc RpcSendTextMsg(TextMsg) returns (Response) {}
-  rpc RpcSendImageMsg(ImageMsg) returns (Response) {}
-  rpc RpcGetMsgTypes(Empty) returns (MsgTypes) {}
-  rpc RpcGetContacts(Empty) returns (Contacts) {}
-  rpc RpcGetDbNames(Empty) returns (DbNames) {}
-  rpc RpcGetDbTables(String) returns (DbTables) {}
-  rpc RpcExecDbQuery(DbQuery) returns (DbRows) {}
-  rpc RpcAcceptNewFriend(Verification) returns (Response) {}
-}
-*/
-
 enum Functions {
     FUNC_RESERVED         = 0x00;
     FUNC_IS_LOGIN         = 0x01;
