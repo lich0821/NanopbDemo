@@ -13,7 +13,7 @@ using namespace std;
 
 typedef map<int, string> MsgTypes_t;
 
-void print_buffer(uint8_t *buffer, size_t len, const char *prefix, bool newline)
+static void print_buffer(uint8_t *buffer, size_t len, const char *prefix, bool newline)
 {
     if (prefix != NULL) {
         printf("%s[%d]:\n", prefix, len);
@@ -26,7 +26,7 @@ void print_buffer(uint8_t *buffer, size_t len, const char *prefix, bool newline)
         printf("\n");
 }
 
-bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void *const *arg)
+static bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void *const *arg)
 {
     const char *str = (const char *)*arg;
 
@@ -37,7 +37,7 @@ bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void *const *a
     return pb_encode_string(stream, (uint8_t *)str, strlen(str));
 }
 
-bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
     string *str = static_cast<string *>(*arg);
     size_t len  = stream->bytes_left;
@@ -70,7 +70,7 @@ static bool encode_types(pb_ostream_t *stream, const pb_field_t *field, void *co
     return true;
 }
 
-bool decode_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool decode_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
     map<int, string> *m = (map<int, string> *)*arg;
     string str;
@@ -87,7 +87,7 @@ bool decode_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
     return true;
 }
 
-bool cb_msg_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool cb_msg_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
     Response *rsp = (Response *)field->message;
 
@@ -100,7 +100,7 @@ bool cb_msg_types(pb_istream_t *stream, const pb_field_t *field, void **arg)
     return true;
 }
 
-bool encode_req(vector<uint8_t> *buffer, Request req)
+static bool encode_req(vector<uint8_t> *buffer, Request req)
 {
     size_t len;
     if (!pb_get_encoded_size(&len, Request_fields, &req)) {
@@ -117,7 +117,7 @@ bool encode_req(vector<uint8_t> *buffer, Request req)
     return true;
 }
 
-bool decode_req(uint8_t *buffer, size_t len, Request *req)
+static bool decode_req(uint8_t *buffer, size_t len, Request *req)
 {
     pb_istream_t stream = pb_istream_from_buffer(buffer, len);
 
@@ -128,7 +128,7 @@ bool decode_req(uint8_t *buffer, size_t len, Request *req)
     return true;
 }
 
-void test_is_login()
+static void test_is_login()
 {
     vector<uint8_t> buffer;
     Request enc   = Request_init_default;
@@ -145,7 +145,7 @@ void test_is_login()
     printf("---------------------------------------\n");
 }
 
-void test_get_self_wxid()
+static void test_get_self_wxid()
 {
     vector<uint8_t> buffer;
     Request enc   = Request_init_default;
@@ -162,7 +162,7 @@ void test_get_self_wxid()
     printf("---------------------------------------\n");
 }
 
-void test_send_txt(char *msg, char *receiver, char *aters)
+static void test_send_txt(char *msg, char *receiver, char *aters)
 {
     vector<uint8_t> buffer;
 
@@ -182,7 +182,7 @@ void test_send_txt(char *msg, char *receiver, char *aters)
     printf("---------------------------------------\n");
 }
 
-void test_get_msg_types()
+static void test_get_msg_types()
 {
     size_t len = 1024;
     uint8_t buffer[1024];
