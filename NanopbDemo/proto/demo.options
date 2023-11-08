@@ -2,3 +2,5 @@
 * mangle_names:M_STRIP_PACKAGE
 * fallback_type:FT_POINTER
 MsgTypes* fallback_type:FT_CALLBACK
+DbField* fallback_type:FT_CALLBACK
+DbRow* fallback_type:FT_CALLBACK
